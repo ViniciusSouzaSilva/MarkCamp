@@ -60,10 +60,21 @@ def cadastrarObra():
     contratacao = input('Número de contratação: ')
     obra = input('Nome da obra: ')
     endereco = input('Endereço da obra: ')
+    anoData = int(input('Ano de início: '))
+    mesData = int(input('Mês de início: '))
+    diaData = int(input('Dia de início: '))
+    anoPrev = int(input('Ano previsto para término: '))
+    mesPrev = int(input('Mês previsto para término: '))
+    diaPrev = int(input('Dia previsto para término: '))
+    orcamento = int(input('Valor orçado: '))
+    situacao = input('Situação atual: ')
+
+    data = f"'{anoData}-{mesData}-{diaData}'"
+    prev = f"'{anoPrev}-{mesPrev}-{diaPrev}'"
 
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
-            cursor.execute(f'INSERT INTO Obras(Contratacao, Obra, Endereco) VALUES("{contratacao}", "{obra}", "{endereco}")')
+            cursor.execute(f'INSERT INTO Obras(Contratacao, Obra, Endereco, Data, Previsao, Situacao, Orcado) VALUES("{contratacao}", "{obra}", "{endereco}", {data}, {prev}, "{situacao}", {orcamento})')
             conexao.commit()
 
     mainMenu()
