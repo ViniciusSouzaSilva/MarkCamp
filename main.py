@@ -19,17 +19,17 @@ obras = []
 def iniciarDB():
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
-            cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15))')
-            cursor.execute('CREATE TABLE IF NOT EXISTS Visitas(Data DATE, Horario TIME(0), Tempo VARCHAR(10), Servicos VARCHAR(20), Observacoes VARCHAR(20), PRIMARY KEY(Data, Horario))')
-            cursor.execute('CREATE TABLE IF NOT EXISTS Medicoes(Data DATE, Horario TIME(0), Descricao VARCHAR(20), Observacoes VARCHAR(20), PRIMARY KEY(Data, Horario))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15), GestorPu VARCHAR(35), GestorPr VARCHAR(35))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS Visitas(Data DATE, Horario TIME(0), Tempo VARCHAR(10), Servicos VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS Medicoes(Data DATE, Horario TIME(0), Descricao VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
             cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPublicos(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40), Endereco VARCHAR(40))')
             cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPrivados(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40), Endereco VARCHAR(40))')
     mainMenu()
 
 def mainMenu():
+    system('cls')
+    obras.clear()
     print(cab1)
-
-
 
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
@@ -48,18 +48,32 @@ def mainMenu():
     print(opcMainMenu)
     escolha = int(input('---> '))
 
-    if escolha == 3:
+    if escolha == 1:
+        cadastrarObra()
+    elif escolha == 3:
         id = int(input('Número da obra: '))
         excluirObra(id)
 
 def cadastrarObra():
-    print()
+    system('cls')
+
+    contratacao = input('Número de contratação: ')
+    obra = input('Nome da obra: ')
+    endereco = input('Endereço da obra: ')
+
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'INSERT INTO Obras(Contratacao, Obra, Endereco) VALUES("{contratacao}", "{obra}", "{endereco}")')
+            conexao.commit()
+
+    mainMenu()
 
 def excluirObra(id):
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'DELETE FROM Obras WHERE Contratacao = "{obras[id - 1][0]}"' )
             conexao.commit()
+    mainMenu()
 
 
 iniciarDB()
