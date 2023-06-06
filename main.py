@@ -8,6 +8,13 @@ SECRETARIA DE OBRAS PÚBLICAS
 LISTA DE OBRAS CADASTRADAS:
 
 {'NÚMERO':<12}{'Nº DE CONTRATAÇÃO':<25}{'NOME':<20}{'ENDEREÇO':<30}"""
+opcMainMenu = f"""
+SELECIONE A OPERAÇÃO:
+[1] CADASTRAR OBRA
+[2] VISUALIZAR OBRA
+[3] EXCLUIR OBRA"""
+
+obras = []
 
 def iniciarDB():
     with sqlite3.connect('Obras.db') as conexao:
@@ -22,7 +29,7 @@ def iniciarDB():
 def mainMenu():
     print(cab1)
 
-    obras = []
+
 
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
@@ -37,5 +44,22 @@ def mainMenu():
 
             for i in obras:
                 print(f"{obras.index(i) + 1:<12}{i[0]:<25}{i[1]:<20}{i[2]:<30}")
+
+    print(opcMainMenu)
+    escolha = int(input('---> '))
+
+    if escolha == 3:
+        id = int(input('Número da obra: '))
+        excluirObra(id)
+
+def cadastrarObra():
+    print()
+
+def excluirObra(id):
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'DELETE FROM Obras WHERE Contratacao = "{obras[id - 1][0]}"' )
+            conexao.commit()
+
 
 iniciarDB()
