@@ -9,12 +9,18 @@ LISTA DE OBRAS CADASTRADAS:
 
 {'NÚMERO':<12}{'Nº DE CONTRATAÇÃO':<25}{'NOME':<20}{'ENDEREÇO':<30}"""
 
-cab2 = f"\n{'MARK CAMP':^150}\n\n" + '''OBRA: {a1:<35}GESTOR PUBLICO: {a2:<25}TEL: {a3:<15}EMAIL: {a4:<30}
+cab2 = f"\n{'MARK CAMP':^120}\n\n" + '''OBRA: {a1:<35}GESTOR PUBLICO: {a2:<25}TEL: {a3:<15}EMAIL: {a4:<30}
 ENDEREÇO: {a5:<31}GESTOR PRIVADO: {a6:<25}TEL: {a7:<15}EMAIL: {a8:<30}
 DATA: {a9:<35}PROCESSO DE CONTRATAÇÃO: {a10:<30}
 SITUAÇÃO ATUAL: {a11:25}VALOR ORÇADO: {a12:<30}
 PREVISÃO DE TÉRMINO: {a13:<20}VALOR MEDIDO: {a14:<30}
 '''
+
+cab3 = f"""\n{'MARK CAMP':^120}
+
+LISTA DE GESTORES PUBLICOS CADASTRADOS:
+
+{'NÚMERO':<12}{'NOME':<25}{'TELEFONE':<25}{'E-MAIL':<25}"""
 
 opcMainMenu = f"""
 SELECIONE A OPERAÇÃO:
@@ -61,9 +67,14 @@ def mainMenu():
 
     if escolha == 1:
         cadastrarObra()
+    elif escolha == 2:
+        id = int(input('Número da obra: '))
+        visualizarObra(id)
     elif escolha == 3:
         id = int(input('Número da obra: '))
         excluirObra(id)
+    elif escolha == 4:
+        visualizarGesPub()
 
 def cadastrarObra():
     system('cls')
@@ -125,6 +136,14 @@ def cadastrarObra():
     input('Pressione enter para voltar...')
     mainMenu()
 
+def visualizarObra(id):
+    system('cls')
+
+    print(cab2.format(a1=obras[id - 1][1], a2='', a3='', a4='', a5=obras[id - 1][2], a6='', a7='', a8='', a9=obras[id - 1][3], a10=obras[id - 1][0], a11=obras[id - 1][5], a12=obras[id - 1][6], a13=obras[id - 1][4], a14=''))
+
+def visualizarGesPub():
+    print(cab3)
+
 def excluirObra(id):
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
@@ -134,12 +153,3 @@ def excluirObra(id):
 
 
 iniciarDB()
-
-
-
-
-
-
-
-
-tes = 'Obra: {a:^20} aaaaaaaaa {b}'
