@@ -28,9 +28,16 @@ SELECIONE A OPERAÇÃO:
 [2] VISUALIZAR OBRA
 [3] EXCLUIR OBRA"""
 
+opcVisuGestor = f"""
+SELECIONE A OPERAÇÃO:
+[1] CADASTRAR GESTOR
+[2] EDITAR GESTOR
+[3] EXCLUIR GESTOR"""
+
 n = 'Lorem ipsum'
 
 obras = []
+gestpu = []
 
 def iniciarDB():
     with sqlite3.connect('Obras.db') as conexao:
@@ -38,8 +45,8 @@ def iniciarDB():
             cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15), GestorPu VARCHAR(35), GestorPr VARCHAR(35))')
             cursor.execute('CREATE TABLE IF NOT EXISTS Visitas(Data DATE, Horario TIME(0), Tempo VARCHAR(10), Servicos VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
             cursor.execute('CREATE TABLE IF NOT EXISTS Medicoes(Data DATE, Horario TIME(0), Descricao VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
-            cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPublicos(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40), Endereco VARCHAR(40))')
-            cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPrivados(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40), Endereco VARCHAR(40))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPublicos(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPrivados(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40))')
     mainMenu()
 
 def mainMenu():
@@ -136,13 +143,45 @@ def cadastrarObra():
     input('Pressione enter para voltar...')
     mainMenu()
 
+def cadastrarGestorPublico():
+    nome = input('Nome do novo gestor: ')
+    tel = int(input('Telefone do novo gestor: '))
+    email = input('E-mail do novo gestor: ')
+
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'INSERT INTO GestoresPublicos(Nome,Telefone,Email) VALUES("{nome}",{tel},"{email}")')
+
+    visualizarGesPub()
+
 def visualizarObra(id):
     system('cls')
 
     print(cab2.format(a1=obras[id - 1][1], a2='', a3='', a4='', a5=obras[id - 1][2], a6='', a7='', a8='', a9=obras[id - 1][3], a10=obras[id - 1][0], a11=obras[id - 1][5], a12=obras[id - 1][6], a13=obras[id - 1][4], a14=''))
 
 def visualizarGesPub():
+    system('cls')
     print(cab3)
+
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute('SELECT * FROM GestoresPublicos')
+
+            while True:
+                res = cursor.fetchone()
+                if res == None:
+                    break
+                else:
+                    gestpu.append(res)
+
+    for i in gestpu:
+        print(f'{gestpu.index(i) + 1:<12}{i[0]:<25}{i[1]:<25}{i[2]:<25}')
+
+    print(opcVisuGestor)
+    escolha = int(input('---> '))
+
+    if escolha == 1:
+        cadastrarGestorPublico()
 
 def excluirObra(id):
     with sqlite3.connect('Obras.db') as conexao:
