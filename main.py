@@ -26,13 +26,20 @@ opcMainMenu = f"""
 SELECIONE A OPERAÇÃO:
 [1] CADASTRAR OBRA
 [2] VISUALIZAR OBRA
-[3] EXCLUIR OBRA"""
+[3] EXCLUIR OBRA
+[4] VISUALIZAR GESTORES PÚBLICOS\n"""
 
 opcVisuGestor = f"""
 SELECIONE A OPERAÇÃO:
 [1] CADASTRAR GESTOR
 [2] EDITAR GESTOR
-[3] EXCLUIR GESTOR"""
+[3] EXCLUIR GESTOR\n"""
+
+opcVisuObra = f"""
+SELECIONE A OPERAÇÃO:
+[1] DESIGNAR GESTOR PÚBLICO
+[2] 
+[3]"""
 
 n = 'Lorem ipsum'
 
@@ -42,7 +49,7 @@ gestpu = []
 def iniciarDB():
     with sqlite3.connect('Obras.db') as conexao:
         with closing(conexao.cursor()) as cursor:
-            cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15), GestorPu VARCHAR(35), GestorPr VARCHAR(35))')
+            cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15) DEFAULT 0, GestorPu VARCHAR(35) DEFAULT "", GestorPr VARCHAR(35) DEFAULT "")')
             cursor.execute('CREATE TABLE IF NOT EXISTS Visitas(Data DATE, Horario TIME(0), Tempo VARCHAR(10), Servicos VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
             cursor.execute('CREATE TABLE IF NOT EXISTS Medicoes(Data DATE, Horario TIME(0), Descricao VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
             cursor.execute('CREATE TABLE IF NOT EXISTS GestoresPublicos(Nome VARCHAR(35) PRIMARY KEY, Telefone VARCHAR(20), Email VARCHAR(40))')
@@ -70,6 +77,7 @@ def mainMenu():
                 print(f"{obras.index(i) + 1:<12}{i[0]:<25}{i[1]:<20}{i[2]:<30}")
 
     print(opcMainMenu)
+
     escolha = int(input('---> '))
 
     if escolha == 1:
@@ -154,10 +162,55 @@ def cadastrarGestorPublico():
 
     visualizarGesPub()
 
+def designarGestorPublico(id):
+    system('cls')
+    print(cab3)
+
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute('SELECT * FROM GestoresPublicos')
+
+            while True:
+                res = cursor.fetchone()
+                if res == None:
+                    break
+                else:
+                    gestpu.append(res)
+
+    for i in gestpu:
+        print(f'{gestpu.index(i) + 1:<12}{i[0]:<25}{i[1]:<25}{i[2]:<25}')
+
+    escolha = int(input("Número do gestor escolhido---> "))
+
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'UPDATE Obras SET GestorPu = "{gestpu[escolha - 1][0]}" WHERE Contratacao = "{obras[id - 1][0]}"')
+            conexao.commit()
+
+    visualizarObra(id)
 def visualizarObra(id):
     system('cls')
+    locgespu = []
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'SELECT Telefone, Email FROM GestoresPublicos WHERE Nome = "{obras[id - 1][8]}"')
+            while True:
+                res = cursor.fetchone()
+                if res == None:
+                    break
+                else:
+                    locgespu.append(res)
 
-    print(cab2.format(a1=obras[id - 1][1], a2='', a3='', a4='', a5=obras[id - 1][2], a6='', a7='', a8='', a9=obras[id - 1][3], a10=obras[id - 1][0], a11=obras[id - 1][5], a12=obras[id - 1][6], a13=obras[id - 1][4], a14=''))
+    if locgespu != []:
+        print(cab2.format(a1=obras[id - 1][1], a2=obras[id - 1][8], a3=locgespu[0][0], a4=locgespu[0][1],a5=obras[id - 1][2], a6='', a7='', a8='', a9=obras[id - 1][3], a10=obras[id - 1][0],a11=obras[id - 1][5], a12=obras[id - 1][6], a13=obras[id - 1][4], a14=obras[id - 1][7]))
+    else:
+        print(cab2.format(a1=obras[id - 1][1], a2=obras[id - 1][8], a3='', a4='',a5=obras[id - 1][2], a6='', a7='', a8='', a9=obras[id - 1][3], a10=obras[id - 1][0],a11=obras[id - 1][5], a12=obras[id - 1][6], a13=obras[id - 1][4], a14=obras[id - 1][7]))
+
+
+    escolha = int(input('---> '))
+
+    if escolha == 1:
+        designarGestorPublico(id)
 
 def visualizarGesPub():
     system('cls')
@@ -190,5 +243,13 @@ def excluirObra(id):
             conexao.commit()
     mainMenu()
 
+def search():
+    with sqlite3.connect('Obras.db') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute('SELECT * FROM Obras')
+            res = cursor.fetchone()
 
+            print(res)
+
+#search()
 iniciarDB()
