@@ -34,7 +34,8 @@ opcVisuGestor = f"""
 SELECIONE A OPERAÇÃO:
 [1] CADASTRAR GESTOR
 [2] EDITAR GESTOR
-[3] EXCLUIR GESTOR\n"""
+[3] EXCLUIR GESTOR
+[4] VOLTAR\n"""
 
 opcVisuObra = f"""
 SELECIONE A OPERAÇÃO:
@@ -93,8 +94,11 @@ def mainMenu():
         id = int(input('Número da obra: '))
         visualizarObra(id)
     elif escolha == 3:
-        id = int(input('Número da obra: '))
-        excluirObra(id)
+        id = int(input('Número da obra([0] cancelar): '))
+        if id == 0:
+            mainMenu()
+        else:
+            excluirObra(id)
     elif escolha == 4:
         visualizarGesPub()
     elif escolha == 5:
@@ -118,37 +122,66 @@ def cadastrarObra():
     prev = ''
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
-    contratacao = input('Número de contratação: ')
+    print('[0] CANCELAR\n')
+    contratacao = input('Processo de contratação: ')
     system('cls')
+    if contratacao == 0 or contratacao == '0':
+        mainMenu()
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao, a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     obra = input('Nome da obra: ')
     system('cls')
+    if obra == 0 or obra == '0':
+        mainMenu()
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     endereco = input('Endereço da obra: ')
     system('cls')
+    if endereco == 0 or endereco == '0':
+        mainMenu()
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     anoData = int(input('Ano de início: '))
+    if anoData == 0 or anoData == '0':
+        mainMenu()
     mesData = int(input('Mês de início: '))
+    if mesData == 0 or mesData == '0':
+        mainMenu()
     diaData = int(input('Dia de início: '))
+    if diaData == 0 or diaData == '0':
+        mainMenu()
     data = f"'{anoData}-{mesData}-{diaData}'"
     system('cls')
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     anoPrev = int(input('Ano previsto para término: '))
+    if anoPrev == 0 or anoPrev == '0':
+        mainMenu()
     mesPrev = int(input('Mês previsto para término: '))
+    if mesPrev == 0 or mesPrev == '0':
+        mainMenu()
     diaPrev = int(input('Dia previsto para término: '))
+    if diaPrev == 0 or diaPrev == '0':
+        mainMenu()
     prev = f"'{anoPrev}-{mesPrev}-{diaPrev}'"
     system('cls')
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     orcamento = int(input('Valor orçado: '))
+    if orcamento == 0 or orcamento == '0':
+        mainMenu()
     system('cls')
 
     print(cab2.format(a1=obra, a2='', a3='', a4='', a5=endereco, a6='', a7='', a8='', a9=data, a10=contratacao,a11=situacao, a12=orcamento, a13=prev, a14=''))
+    print('[0] CANCELAR\n')
     situacao = input('Situação atual: ')
+    if situacao == 0 or situacao == '0':
+        mainMenu()
     system('cls')
 
     with sqlite3.connect('Obras.db') as conexao:
@@ -289,8 +322,10 @@ def visualizarObra(id):
 
     if escolha == 1:
         designarGestorPublico(id)
-    if escolha == 2:
+    elif escolha == 2:
         designarGestorPrivado(id)
+    elif escolha == 8:
+        mainMenu()
 
 def visualizarGesPub():
     system('cls')
@@ -315,6 +350,8 @@ def visualizarGesPub():
 
     if escolha == 1:
         cadastrarGestorPublico()
+    elif escolha == 4:
+        mainMenu()
 
 def visualizarGesPri():
     system('cls')
@@ -339,6 +376,8 @@ def visualizarGesPri():
 
     if escolha == 1:
         cadastrarGestorPrivado()
+    elif escolha == 4:
+        mainMenu()
 
 def excluirObra(id):
     with sqlite3.connect('Obras.db') as conexao:
@@ -347,13 +386,4 @@ def excluirObra(id):
             conexao.commit()
     mainMenu()
 
-def search():
-    with sqlite3.connect('Obras.db') as conexao:
-        with closing(conexao.cursor()) as cursor:
-            cursor.execute('SELECT * FROM Obras')
-            res = cursor.fetchone()
-
-            print(res)
-
-#search()
 iniciarDB()
