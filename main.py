@@ -22,6 +22,12 @@ LISTA DE GESTORES PUBLICOS CADASTRADOS:
 
 {'NÚMERO':<12}{'NOME':<25}{'TELEFONE':<25}{'E-MAIL':<25}"""
 
+cab4 = f"""\n{'MARK CAMP':^120}
+
+EDITANDO GESTOR:
+
+{'NOME':<25}{'TELEFONE':<25}{'E-MAIL':<25}"""
+
 opcMainMenu = f"""
 SELECIONE A OPERAÇÃO:
 [1] CADASTRAR OBRA
@@ -48,6 +54,14 @@ SELECIONE A OPERAÇÃO:
 [7] EDITAR INFORMAÇÕES DA OBRA
 [8] VOLTAR\n"""
 
+opcEditGest = f"""
+SELECIONE A INFORMAÇÃO A SER EDITADA:
+[1] NOME
+[2] TELEFONE
+[3] E-MAIL
+[4] CANCELAR
+"""
+
 n = 'Lorem ipsum'
 
 obras = []
@@ -55,7 +69,7 @@ gestpu = []
 gestpr = []
 
 def iniciarDB():
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('CREATE TABLE IF NOT EXISTS Obras(Contratacao VARCHAR(10) PRIMARY KEY, Obra VARCHAR(25), Endereco VARCHAR(35), Data DATE, Previsao DATE, Situacao VARCHAR(10), Orcado MONEY(15), Medido MONEY(15) DEFAULT 0, GestorPu VARCHAR(35) DEFAULT "", GestorPr VARCHAR(35) DEFAULT "")')
             cursor.execute('CREATE TABLE IF NOT EXISTS Visitas(Data DATE, Horario TIME(0), Tempo VARCHAR(10), Servicos VARCHAR(20), Observacoes VARCHAR(20), Contratacao VARCHAR(10), PRIMARY KEY(Data, Horario))')
@@ -70,7 +84,7 @@ def mainMenu():
 
     print(cab1)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM Obras')
 
@@ -184,7 +198,7 @@ def cadastrarObra():
         mainMenu()
     system('cls')
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'INSERT INTO Obras(Contratacao, Obra, Endereco, Data, Previsao, Situacao, Orcado) VALUES("{contratacao}", "{obra}", "{endereco}", {data}, {prev}, "{situacao}", {orcamento})')
             conexao.commit()
@@ -198,7 +212,7 @@ def cadastrarGestorPublico():
     tel = int(input('Telefone do novo gestor: '))
     email = input('E-mail do novo gestor: ')
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'INSERT INTO GestoresPublicos(Nome,Telefone,Email) VALUES("{nome}",{tel},"{email}")')
 
@@ -209,7 +223,7 @@ def cadastrarGestorPrivado():
     tel = int(input('Telefone do novo gestor: '))
     email = input('E-mail do novo gestor: ')
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'INSERT INTO GestoresPrivados(Nome,Telefone,Email) VALUES("{nome}",{tel},"{email}")')
 
@@ -217,9 +231,10 @@ def cadastrarGestorPrivado():
 
 def designarGestorPublico(id):
     system('cls')
+    gestpu.clear()
     print(cab3)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM GestoresPublicos')
 
@@ -235,7 +250,7 @@ def designarGestorPublico(id):
 
     escolha = int(input("Número do gestor escolhido ---> "))
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'UPDATE Obras SET GestorPu = "{gestpu[escolha - 1][0]}" WHERE Contratacao = "{obras[id - 1][0]}"')
             conexao.commit()
@@ -244,9 +259,10 @@ def designarGestorPublico(id):
 
 def designarGestorPrivado(id):
     system('cls')
+    gestpr.clear()
     print(cab3)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM GestoresPrivados')
 
@@ -262,7 +278,7 @@ def designarGestorPrivado(id):
 
     escolha = int(input("Número do gestor escolhido ---> "))
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(
                 f'UPDATE Obras SET GestorPr = "{gestpr[escolha - 1][0]}" WHERE Contratacao = "{obras[id - 1][0]}"')
@@ -277,7 +293,7 @@ def visualizarObra(id):
 
     obras.clear()
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM Obras')
 
@@ -288,7 +304,7 @@ def visualizarObra(id):
                 else:
                     obras.append(res)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'SELECT Telefone, Email FROM GestoresPublicos WHERE Nome = "{obras[id - 1][8]}"')
             while True:
@@ -298,7 +314,7 @@ def visualizarObra(id):
                 else:
                     locgespu.append(res)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'SELECT Telefone, Email FROM GestoresPrivados WHERE Nome = "{obras[id - 1][9]}"')
             while True:
@@ -329,9 +345,10 @@ def visualizarObra(id):
 
 def visualizarGesPub():
     system('cls')
+    gestpu.clear()
     print(cab3)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM GestoresPublicos')
 
@@ -350,14 +367,18 @@ def visualizarGesPub():
 
     if escolha == 1:
         cadastrarGestorPublico()
+    elif escolha == 2:
+        num = int(input('Insira o número do gestor a ser editado: '))
+        editarGestPu(gestpu[num - 1])
     elif escolha == 4:
         mainMenu()
 
 def visualizarGesPri():
     system('cls')
+    gestpr.clear()
     print(cab3)
 
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute('SELECT * FROM GestoresPrivados')
 
@@ -376,11 +397,61 @@ def visualizarGesPri():
 
     if escolha == 1:
         cadastrarGestorPrivado()
+    elif escolha == 2:
+        num = int(input('Insira o número do gestor a ser editado: '))
+        editarGestPr(gestpr[num - 1])
     elif escolha == 4:
         mainMenu()
 
+def editarGestPu(g):
+    system('cls')
+    print(cab4)
+    print(f'{g[0]:<25}{g[1]:<25}{g[2]:<25}')
+    print(opcEditGest)
+
+    opc = int(input('---> '))
+    if opc != 1 and opc != 2 and opc != 3:
+        visualizarGesPub()
+
+    novoValor = input('Insira o novo valor: ')
+
+    with sqlite3.connect('Obras.sqlite') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            if opc == 1:
+                cursor.execute(f'UPDATE GestoresPublicos SET Nome = "{novoValor}" WHERE Nome = "{g[0]}"')
+            elif opc == 2:
+                cursor.execute(f'UPDATE GestoresPublicos SET Telefone = "{novoValor}" WHERE Nome = "{g[0]}"')
+            elif opc == 3:
+                cursor.execute(f'UPDATE GestoresPublicos SET Email = "{novoValor}" WHERE Nome = "{g[0]}"')
+
+    visualizarGesPub()
+
+
+def editarGestPr(g):
+    system('cls')
+    print(cab4)
+    print(f'{g[0]:<25}{g[1]:<25}{g[2]:<25}')
+    print(opcEditGest)
+
+    opc = int(input('---> '))
+    if opc != 1 and opc != 2 and opc != 3:
+        visualizarGesPri()
+
+    novoValor = input('Insira o novo valor: ')
+
+    with sqlite3.connect('Obras.sqlite') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            if opc == 1:
+                cursor.execute(f'UPDATE GestoresPrivados SET Nome = "{novoValor}" WHERE Nome = "{g[0]}"')
+            elif opc == 2:
+                cursor.execute(f'UPDATE GestoresPrivados SET Telefone = "{novoValor}" WHERE Nome = "{g[0]}"')
+            elif opc == 3:
+                cursor.execute(f'UPDATE GestoresPrivados SET Email = "{novoValor}" WHERE Nome = "{g[0]}"')
+
+    visualizarGesPri()
+
 def excluirObra(id):
-    with sqlite3.connect('Obras.db') as conexao:
+    with sqlite3.connect('Obras.sqlite') as conexao:
         with closing(conexao.cursor()) as cursor:
             cursor.execute(f'DELETE FROM Obras WHERE Contratacao = "{obras[id - 1][0]}"')
             conexao.commit()
