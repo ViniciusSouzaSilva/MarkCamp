@@ -425,6 +425,7 @@ def editarGestPu(g):
         with closing(conexao.cursor()) as cursor:
             if opc == 1:
                 cursor.execute(f'UPDATE GestoresPublicos SET Nome = "{novoValor}" WHERE Nome = "{g[0]}"')
+                cursor.execute(f'UPDATE Obras SET GestorPu = "{novoValor}" WHERE GestorPu = "{g[0]}"')
             elif opc == 2:
                 cursor.execute(f'UPDATE GestoresPublicos SET Telefone = "{novoValor}" WHERE Nome = "{g[0]}"')
             elif opc == 3:
@@ -449,6 +450,7 @@ def editarGestPr(g):
         with closing(conexao.cursor()) as cursor:
             if opc == 1:
                 cursor.execute(f'UPDATE GestoresPrivados SET Nome = "{novoValor}" WHERE Nome = "{g[0]}"')
+                cursor.execute(f'UPDATE Obras SET GestorPr = "{novoValor}" WHERE GestorPr = "{g[0]}"')
             elif opc == 2:
                 cursor.execute(f'UPDATE GestoresPrivados SET Telefone = "{novoValor}" WHERE Nome = "{g[0]}"')
             elif opc == 3:
