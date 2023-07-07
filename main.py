@@ -370,6 +370,9 @@ def visualizarGesPub():
     elif escolha == 2:
         num = int(input('Insira o número do gestor a ser editado: '))
         editarGestPu(gestpu[num - 1])
+    elif escolha == 3:
+        num = int(input('Insira o número do gestor a ser excluido: '))
+        excluirGestorPu(gestpu[num - 1][0])
     elif escolha == 4:
         mainMenu()
 
@@ -400,6 +403,9 @@ def visualizarGesPri():
     elif escolha == 2:
         num = int(input('Insira o número do gestor a ser editado: '))
         editarGestPr(gestpr[num - 1])
+    elif escolha == 3:
+        num = int(input('Insira o número do gestor a ser excluido: '))
+        excluirGestorPr(gestpr[num - 1][0])
     elif escolha == 4:
         mainMenu()
 
@@ -447,8 +453,25 @@ def editarGestPr(g):
                 cursor.execute(f'UPDATE GestoresPrivados SET Telefone = "{novoValor}" WHERE Nome = "{g[0]}"')
             elif opc == 3:
                 cursor.execute(f'UPDATE GestoresPrivados SET Email = "{novoValor}" WHERE Nome = "{g[0]}"')
+            conexao.commit()
 
     visualizarGesPri()
+
+def excluirGestorPr(nome):
+    with sqlite3.connect('Obras.sqlite') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'DELETE FROM GestoresPrivados WHERE Nome = "{nome}"')
+            cursor.execute(f'UPDATE Obras SET GestorPr = "" WHERE GestorPr = "{nome}"')
+            conexao.commit()
+    visualizarGesPri()
+
+def excluirGestorPu(nome):
+    with sqlite3.connect('Obras.sqlite') as conexao:
+        with closing(conexao.cursor()) as cursor:
+            cursor.execute(f'DELETE FROM GestoresPublicos WHERE Nome = "{nome}"')
+            cursor.execute(f'UPDATE Obras SET GestorPu = "" WHERE GestorPu = "{nome}"')
+            conexao.commit()
+    visualizarGesPub()
 
 def excluirObra(id):
     with sqlite3.connect('Obras.sqlite') as conexao:
